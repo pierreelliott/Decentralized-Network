@@ -1,3 +1,5 @@
+import protocol.DialogProtocol;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.SocketException;
@@ -13,6 +15,7 @@ public class Serveur extends Util implements Runnable {
         int length = 10000;
         byte[] buf;
         DatagramPacket p;
+        System.out.println("Serveur ready");
         while(true) {
             buf = new byte[length];
             p = new DatagramPacket(buf, length);
@@ -23,7 +26,8 @@ public class Serveur extends Util implements Runnable {
                 String msg = (new String(p.getData(), "UTF-8")).trim();
                 System.out.print(msg);
                 System.out.println("'");
-                if(msg.equalsIgnoreCase("Hello serveur RX302")) {
+                DialogProtocol message = new DialogProtocol(msg);
+                if(message.isAskingConnection()) {
                     System.out.println("Client connecté");
                     establishConnection(p);
                 }

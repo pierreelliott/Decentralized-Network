@@ -68,10 +68,10 @@ public class Util {
         return true;
     }
 
-    public boolean envoyer(String data, byte[] ip, int port) {
+    public boolean envoyer(String data, String ip, int port) {
         InetAddress ad = null;
         try {
-            ad = InetAddress.getByAddress(ip);
+            ad = InetAddress.getByName(ip);
         } catch (UnknownHostException e) {
             System.err.println("Erreur résolution adresse IP");
             return false;

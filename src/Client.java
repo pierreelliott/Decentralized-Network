@@ -1,5 +1,8 @@
+import protocol.DialogProtocol;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.List;
 import java.util.Scanner;
@@ -26,8 +29,26 @@ public class Client extends Util implements Runnable {
                 String msg = (new String(p.getData(), "UTF-8")).trim();
                 System.out.print(msg);
                 System.out.println("'");
+                (new Thread(() -> {
+                    System.out.println("Input running");
+                    input();
+                })).start();
             } catch (IOException e) {
                 e.printStackTrace();
+            }
+        }
+    }
+
+    public String input() {
+        while(true) {
+            Scanner scan = new Scanner(System.in);
+            String text = scan.nextLine();
+            if(!text.equalsIgnoreCase("")) {
+                if(this.envoyer(text, "127.0.0.1", 4000)) {
+                    System.out.println("Message envoyé");
+                } else {
+                    System.out.println("Erreur envoi");
+                }
             }
         }
     }
@@ -36,7 +57,7 @@ public class Client extends Util implements Runnable {
 
     public static void main(String[] args) {
         int SERV_PORT = 4000;
-        byte[] SERV_IP = { 0x7F, 0x00, 0x00, 0x01 };
+        String SERV_IP = "127.0.0.1";
         Client client = null;
 
         try {
@@ -48,24 +69,12 @@ public class Client extends Util implements Runnable {
         if(client == null)
             return;
 
-        boolean env = client.envoyer("Hello serveur RX302", SERV_IP, SERV_PORT);
+        boolean env = client.envoyer(DialogProtocol.requestConnection(client), SERV_IP, SERV_PORT);
         if(env)
             System.out.println("Connecté au serveur");
         else
             System.out.println("Erreur connexion");
 
-
-
-        while(true) {
-            Scanner scan = new Scanner(System.in);
-            String text = scan.nextLine();
-            if(!text.equalsIgnoreCase("")) {
-                if(client.envoyer(text, SERV_IP, SERV_PORT)) {
-                    System.out.println("Message envoyé");
-                } else {
-                    System.out.println("Erreur envoi");
-                }
-            }
-        }
+        (new Thread(client)).start();
     }
 }
