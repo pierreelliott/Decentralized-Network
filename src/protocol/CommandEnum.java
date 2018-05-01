@@ -3,6 +3,7 @@ package protocol;
 public enum CommandEnum {
 
     CONNECTREQUEST("ConnectRequest"),
+    ABORTINGCONNECTION("AbortingConnection"),
     MESSAGE("Message"),
     ACK("Ack"),
     PING("Ping"),

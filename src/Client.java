@@ -19,6 +19,10 @@ public class Client extends Util implements Runnable {
 
     @Override
     public void run() {
+        (new Thread(() -> {
+            input();
+        })).start();
+
         while(true) {
             int length = 10000;
             byte[] buf = new byte[length];
@@ -29,10 +33,6 @@ public class Client extends Util implements Runnable {
                 String msg = (new String(p.getData(), "UTF-8")).trim();
                 System.out.print(msg);
                 System.out.println("'");
-                (new Thread(() -> {
-                    System.out.println("Input running");
-                    input();
-                })).start();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -49,6 +49,7 @@ public class Client extends Util implements Runnable {
                 } else {
                     System.out.println("Erreur envoi");
                 }
+                return text;
             }
         }
     }
