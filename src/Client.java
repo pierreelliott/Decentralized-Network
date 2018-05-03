@@ -49,7 +49,6 @@ public class Client extends Util implements Runnable {
                 } else {
                     System.out.println("Erreur envoi");
                 }
-                return text;
             }
         }
     }

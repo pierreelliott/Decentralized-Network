@@ -1,6 +1,10 @@
 package core;
 
-public abstract class Utils extends Comms implements Runnable {
+public abstract class Utils extends CommInterface implements Runnable {
+
+    public Utils(Object o) throws Exception {
+        super(o);
+    }
 
     @Override
     public void run() {

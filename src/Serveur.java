@@ -38,6 +38,7 @@ public class Serveur extends Util implements Runnable, Observable {
                     System.out.println("Client connecté");
                     establishConnection(p);
                 }
+                setChanged();
                 notifyObservers(p);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -53,7 +54,6 @@ public class Serveur extends Util implements Runnable, Observable {
 
     @Override
     public void addObserver(Observer o) {
-//        if(o == null) throw new NullPointerException();
         observers.add(o);
     }
 
