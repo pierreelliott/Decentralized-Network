@@ -10,13 +10,20 @@ import java.util.List;
 public class Util {
 
     protected DatagramSocket ds;
+    protected InetAddress address;
 
-    public Util() throws SocketException {
+    public Util() throws Exception {
         ds = new DatagramSocket();
     }
 
-    public Util(int port) throws SocketException {
+    public Util(int port) throws Exception {
         ds = new DatagramSocket(port);
+        address = ds.getInetAddress();
+    }
+
+    public Util(InetAddress adr, int port) throws Exception {
+        ds = new DatagramSocket(port, adr);
+        address = ds.getInetAddress();
     }
 
     public Util(DatagramSocket d) {
@@ -72,6 +79,18 @@ public class Util {
         InetAddress ad = null;
         try {
             ad = InetAddress.getByName(ip);
+        } catch (UnknownHostException e) {
+            System.err.println("Erreur résolution adresse IP");
+            return false;
+        }
+
+        return envoyer(data, ad, port);
+    }
+
+    public boolean envoyer(String data, byte[] ip, int port) {
+        InetAddress ad = null;
+        try {
+            ad = InetAddress.getByAddress(ip);
         } catch (UnknownHostException e) {
             System.err.println("Erreur résolution adresse IP");
             return false;

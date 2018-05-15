@@ -1,3 +1,4 @@
+import protocol.ConsoleProtocol;
 import protocol.DialogProtocol;
 
 import java.io.IOException;
@@ -9,11 +10,14 @@ import java.util.Scanner;
 
 public class Client extends Util implements Runnable {
 
-    public Client() throws SocketException {
+    private static int SERV_PORT = 4000;
+    private static String SERV_IP = "127.0.0.2";
+
+    public Client() throws Exception {
         super();
     }
 
-    public Client(int port) throws SocketException {
+    public Client(int port) throws Exception {
         super(port);
     }
 
@@ -24,6 +28,7 @@ public class Client extends Util implements Runnable {
         })).start();
 
         while(true) {
+            System.out.println("Boucle");
             int length = 10000;
             byte[] buf = new byte[length];
             DatagramPacket p = new DatagramPacket(buf, length);
@@ -44,7 +49,7 @@ public class Client extends Util implements Runnable {
             Scanner scan = new Scanner(System.in);
             String text = scan.nextLine();
             if(!text.equalsIgnoreCase("")) {
-                if(this.envoyer(text, "127.0.0.1", 4000)) {
+                if(this.envoyer((ConsoleProtocol.getProtocoleMessage(text)).toString(), SERV_IP, SERV_PORT)) {
                     System.out.println("Message envoyé");
                 } else {
                     System.out.println("Erreur envoi");
@@ -56,13 +61,11 @@ public class Client extends Util implements Runnable {
     /* ======================================= */
 
     public static void main(String[] args) {
-        int SERV_PORT = 4000;
-        String SERV_IP = "127.0.0.1";
         Client client = null;
 
         try {
             client = new Client();
-        } catch (SocketException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

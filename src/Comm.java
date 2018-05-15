@@ -44,7 +44,7 @@ public class Comm extends Util implements Runnable, Observer {
         DialogProtocol text = new DialogProtocol(p);
 
         System.out.println(text);
-        envoyer("Message reçu : '"+text+"'", ipClient, portClient);
+        envoyer("Message reçu : '"+text.toString()+"'", ipClient, portClient);
 
         if(text.isAbortingConnection()) {
             return false;
@@ -59,10 +59,12 @@ public class Comm extends Util implements Runnable, Observer {
         if(arg instanceof DatagramPacket) {
             DatagramPacket p = (DatagramPacket) arg;
             System.out.println("Un client a envoyé un message");
-            System.out.println("IP paq : " + p.getAddress());
+            System.out.println("IP paq : " + p.getAddress().getHostAddress());
             System.out.println("");
-            if(p.getAddress().getAddress() == ipClient.getAddress() && p.getPort() == portClient) {
+            if(p.getAddress().getHostAddress().equalsIgnoreCase(ipClient.getHostAddress())
+                    && p.getPort() == portClient) {
                 traitement(p);
+                System.out.println("Message traité");
             }
         }
     }

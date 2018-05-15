@@ -1,23 +1,29 @@
+import core.Utils;
 import protocol.DialogProtocol;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 import util.Observer;
 import util.Observable;
 
-public class Serveur extends Util implements Runnable, Observable {
+public class Serveur extends Utils implements Runnable, Observable {
 
-    public Serveur(int port) throws SocketException {
+    public Serveur(int port) throws Exception {
         super(port);
+    }
+
+    public Serveur(InetAddress adr, int port) throws Exception {
+        super(port, adr);
     }
 
     private List<Observer> observers = new ArrayList<>();
     private boolean stateChanged = false;
 
-    @Override
+    /*@Override
     public void run() {
         int length = 10000;
         byte[] buf;
@@ -44,10 +50,10 @@ public class Serveur extends Util implements Runnable, Observable {
                 e.printStackTrace();
             }
         }
-    }
+    }*/
 
     public void establishConnection(DatagramPacket p) {
-        Comm l = new Comm(p.getAddress(), p.getPort(), ds);
+        Comm l = new Comm(p.getAddress(), p.getPort(), getSocket());
         addObserver(l);
         (new Thread(l)).start();
     }
@@ -112,10 +118,51 @@ public class Serveur extends Util implements Runnable, Observable {
     public static void main(String[] args) {
         int PORT = 4000;
         try {
-            Serveur serv = new Serveur(PORT);
+            InetAddress adr = InetAddress.getByName("127.0.0.2");
+            Serveur serv = new Serveur(adr, PORT);
             (new Thread(serv)).start();
-        } catch (SocketException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void init() {
+        System.out.println("Serveur ready");
+    }
+
+    @Override
+    public void preprocess() {
+
+    }
+
+    @Override
+    public void postprocess() {
+
+    }
+
+    @Override
+    public void process() {
+        int length = 10000;
+        byte[] buf;
+        DatagramPacket p;
+        buf = new byte[length];
+        p = new DatagramPacket(buf, length);
+        p = receive(p);
+        if(p == null) {
+            System.out.println("Problème réception");
+            return;
+        }
+        System.out.print("Message reçu : '");
+        String msg = (new String(p.getData())).trim();
+        System.out.print(msg);
+        System.out.println("'");
+        DialogProtocol message = new DialogProtocol(p);
+        if(message.isAskingConnection()) {
+            System.out.println("Client connecté");
+            establishConnection(p);
+        }
+        setChanged();
+        notifyObservers(p);
     }
 }
