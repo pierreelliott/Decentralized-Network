@@ -4,6 +4,7 @@ public enum CommandEnum {
 
     CONNECTREQUEST("ConnectRequest"),
     ABORTINGCONNECTION("AbortingConnection"),
+    CHANGINGPORT("ChangingPort"),
     MESSAGE("Message"),
     ACK("Ack"),
     PING("Ping"),
@@ -39,6 +40,8 @@ public enum CommandEnum {
             case "Ping" : return CommandEnum.PING;
             case "pong":
             case "Pong" : return CommandEnum.PONG;
+            case "ChangingPort":
+            case "changingport": return CommandEnum.CHANGINGPORT;
         }
         return CommandEnum.UNKNOWN;
     }

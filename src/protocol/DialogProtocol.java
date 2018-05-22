@@ -18,6 +18,11 @@ public class DialogProtocol {
         this.content = getContent(data);
     }
 
+    /**
+     * Not finished
+     * @param data
+     * @deprecated
+     */
     private void readData(String data) {
         Pattern global = Pattern.compile("DialogProtocol\\{\\ncommand='.*'\\ncontent='.*'\\n\\}");
         if(!data.startsWith("DialogProtocol{")) {
@@ -55,7 +60,15 @@ public class DialogProtocol {
 
     public boolean isAskingConnection() { return command == CommandEnum.CONNECTREQUEST; }
     public boolean isAbortingConnection() { return command == CommandEnum.ABORTINGCONNECTION; }
+    public boolean isChangingPort() { return command == CommandEnum.CHANGINGPORT; }
     public boolean isMessage() { return command == CommandEnum.MESSAGE; }
+
+    public String getNewHostAddress() {
+        return isChangingPort() ? content.split(";")[0] : "";
+    }
+    public int getNewPort() {
+        return isChangingPort() ? Integer.parseInt(content.split(";")[1]) : 0;
+    }
 
     public String getRawData() { return rawData; }
     public String getContent() { return content; }
@@ -86,7 +99,7 @@ public class DialogProtocol {
     public static String getContent(String message) {
         if(message.startsWith("DialogProtocol{\n")) {
             String tab[] = message.split("content=");
-            if(tab.length > 2) {
+            if(tab.length != 2) {
                 return "";
             } else {
                 return tab[1].substring(1,tab[1].length()-1);

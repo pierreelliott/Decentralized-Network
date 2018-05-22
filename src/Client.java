@@ -10,15 +10,11 @@ import java.util.Scanner;
 
 public class Client extends Util implements Runnable {
 
-    private static int SERV_PORT = 4000;
-    private static String SERV_IP = "127.0.0.2";
+    private String SERV_IP = STATIC_SERV_IP;
+    private int SERV_PORT = STATIC_SERV_PORT;
 
     public Client() throws Exception {
         super();
-    }
-
-    public Client(int port) throws Exception {
-        super(port);
     }
 
     @Override
@@ -38,9 +34,18 @@ public class Client extends Util implements Runnable {
                 String msg = (new String(p.getData(), "UTF-8")).trim();
                 System.out.print(msg);
                 System.out.println("'");
+                traiterReponse(p);
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    public void traiterReponse(DatagramPacket p) {
+        DialogProtocol message = new DialogProtocol(p);
+        if(message.isChangingPort()) {
+            SERV_IP = p.getAddress().getHostAddress();
+            SERV_PORT = p.getPort();
         }
     }
 
@@ -60,6 +65,9 @@ public class Client extends Util implements Runnable {
 
     /* ======================================= */
 
+    private static int STATIC_SERV_PORT = 4000;
+    private static String STATIC_SERV_IP = "127.0.0.1";
+
     public static void main(String[] args) {
         Client client = null;
 
@@ -72,7 +80,7 @@ public class Client extends Util implements Runnable {
         if(client == null)
             return;
 
-        boolean env = client.envoyer(DialogProtocol.requestConnection(client), SERV_IP, SERV_PORT);
+        boolean env = client.envoyer(DialogProtocol.requestConnection(client), STATIC_SERV_IP, STATIC_SERV_PORT);
         if(env)
             System.out.println("Connecté au serveur");
         else

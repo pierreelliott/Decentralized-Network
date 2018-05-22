@@ -3,6 +3,7 @@ import protocol.DialogProtocol;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.ArrayList;
@@ -23,39 +24,29 @@ public class Serveur extends Utils implements Runnable, Observable {
     private List<Observer> observers = new ArrayList<>();
     private boolean stateChanged = false;
 
-    /*@Override
-    public void run() {
-        int length = 10000;
-        byte[] buf;
-        DatagramPacket p;
-        System.out.println("Serveur ready");
-        while(true) {
-            buf = new byte[length];
-            p = new DatagramPacket(buf, length);
-
-            try {
-                ds.receive(p);
-                System.out.print("Message reçu : '");
-                String msg = (new String(p.getData())).trim();
-                System.out.print(msg);
-                System.out.println("'");
-                DialogProtocol message = new DialogProtocol(p);
-                if(message.isAskingConnection()) {
-                    System.out.println("Client connecté");
-                    establishConnection(p);
-                }
-                setChanged();
-                notifyObservers(p);
-            } catch (IOException e) {
-                e.printStackTrace();
+    public void establishConnection(DatagramPacket p, DatagramSocket sock) {
+        try {
+            Comm l;
+            if(getSocket() == sock) {
+                l = new Comm(p.getAddress(), p.getPort(), sock, true);
+                addObserver(l);
+            } else {
+                l = new Comm(p.getAddress(), p.getPort(), sock);
             }
+            (new Thread(l)).start();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-    }*/
+    }
 
     public void establishConnection(DatagramPacket p) {
-        Comm l = new Comm(p.getAddress(), p.getPort(), getSocket());
-        addObserver(l);
-        (new Thread(l)).start();
+        try {
+            int port = Util.scan(SERV_PORT, SERV_PORT+5000).get(1);
+            DatagramSocket sock = new DatagramSocket();
+            establishConnection(p, sock);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -113,19 +104,6 @@ public class Serveur extends Utils implements Runnable, Observable {
         return stateChanged;
     }
 
-    // ===================== STATIC ========================
-
-    public static void main(String[] args) {
-        int PORT = 4000;
-        try {
-            InetAddress adr = InetAddress.getByName("127.0.0.2");
-            Serveur serv = new Serveur(adr, PORT);
-            (new Thread(serv)).start();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     @Override
     public void init() {
         System.out.println("Serveur ready");
@@ -153,16 +131,36 @@ public class Serveur extends Utils implements Runnable, Observable {
             System.out.println("Problème réception");
             return;
         }
-        System.out.print("Message reçu : '");
+        System.out.print("(Serveur) Message reçu : '");
         String msg = (new String(p.getData())).trim();
         System.out.print(msg);
         System.out.println("'");
+        System.out.println("IP : " + p.getAddress().getHostAddress());
         DialogProtocol message = new DialogProtocol(p);
         if(message.isAskingConnection()) {
             System.out.println("Client connecté");
+//            establishConnection(p, getSocket());
             establishConnection(p);
+        } else {
+            setChanged();
+            notifyObservers(p);
         }
-        setChanged();
-        notifyObservers(p);
+    }
+
+    // ===================== STATIC ========================
+
+    private static int SERV_PORT = 4000;
+    private static String SERV_IP = "127.0.0.1";
+    private static InetAddress SERV_INET = null;
+
+    public static void main(String[] args) {
+        try {
+            InetAddress adr = InetAddress.getByName(SERV_IP);
+            SERV_INET = adr;
+            Serveur serv = new Serveur(adr, SERV_PORT);
+            (new Thread(serv)).start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

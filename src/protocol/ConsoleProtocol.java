@@ -14,10 +14,20 @@ public class ConsoleProtocol {
     }
 
     public static DialogProtocol getProtocoleMessage(String text) {
-        String[] tab = text.split(" ");
+        String command = text.split(" ")[0];
         DialogProtocol protoc = new DialogProtocol();
-        protoc.setCommand(tab[0]);
-        protoc.setContent(text.substring(tab[0].length()+1));
+        boolean recognized = true;
+        switch (command) {
+            case "ping":
+            case "message":
+                break;
+            default:
+                command = "message";
+                recognized = false;
+        }
+        protoc.setCommand(command);
+        String content = recognized ? text.substring(command.length()+1) : text;
+        protoc.setContent(content);
         return protoc;
     }
 }
