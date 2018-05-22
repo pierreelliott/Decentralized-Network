@@ -34,6 +34,8 @@ public class Client extends Util implements Runnable {
                 String msg = (new String(p.getData(), "UTF-8")).trim();
                 System.out.print(msg);
                 System.out.println("'");
+                System.out.println("IP : " + p.getAddress().getHostAddress());
+                System.out.println("Port : " + p.getPort());
                 traiterReponse(p);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -44,7 +46,6 @@ public class Client extends Util implements Runnable {
     public void traiterReponse(DatagramPacket p) {
         DialogProtocol message = new DialogProtocol(p);
         if(message.isChangingPort()) {
-            SERV_IP = p.getAddress().getHostAddress();
             SERV_PORT = p.getPort();
         }
     }

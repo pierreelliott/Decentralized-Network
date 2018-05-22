@@ -28,10 +28,10 @@ public class Serveur extends Utils implements Runnable, Observable {
         try {
             Comm l;
             if(getSocket() == sock) {
-                l = new Comm(p.getAddress(), p.getPort(), sock, true);
+                l = new Comm(p.getAddress(), p.getPort(), sock, this, true);
                 addObserver(l);
             } else {
-                l = new Comm(p.getAddress(), p.getPort(), sock);
+                l = new Comm(p.getAddress(), p.getPort(), sock, this);
             }
             (new Thread(l)).start();
         } catch (Exception e) {

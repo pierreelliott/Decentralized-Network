@@ -14,16 +14,17 @@ public class Comm extends Utils implements Runnable, Observer {
     private int portClient;
     private boolean samePortAsParent = false;
 
-    private DatagramPacket dp = null;
+    private Serveur parentServeur;
 
-    public Comm(InetAddress ip, int port, DatagramSocket ds) throws Exception {
+    public Comm(InetAddress ip, int port, DatagramSocket ds, Serveur parent) throws Exception {
         super(ds);
         ipClient = ip;
         portClient = port;
+        parentServeur = parent;
     }
 
-    public Comm(InetAddress ip, int port, DatagramSocket ds, boolean samePort) throws Exception {
-        this(ip, port, ds);
+    public Comm(InetAddress ip, int port, DatagramSocket ds, Serveur parent, boolean samePort) throws Exception {
+        this(ip, port, ds, parent);
         samePortAsParent = samePort;
     }
 
@@ -64,10 +65,7 @@ public class Comm extends Utils implements Runnable, Observer {
         if(!samePortAsParent) {
             DialogProtocol response = new DialogProtocol();
             response.setCommand(CommandEnum.CHANGINGPORT);
-            DatagramSocket sock = getSocket();
-            InetAddress inAdd = sock.getLocalAddress();
-            String hostAdd = inAdd.getHostAddress();
-            response.setContent(hostAdd + ";" + getSocket().getPort());
+            response.setContent("");
             envoyer(response.toString(), ipClient, portClient);
         }
     }

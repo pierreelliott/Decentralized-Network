@@ -20,6 +20,7 @@ public class ConsoleProtocol {
         switch (command) {
             case "ping":
             case "message":
+            case "broadcast":
                 break;
             default:
                 command = "message";
