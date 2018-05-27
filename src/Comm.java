@@ -5,10 +5,8 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.List;
-import util.Observable;
-import util.Observer;
 
-public class Comm extends Utils implements Runnable, Observer {
+public class Comm extends Utils implements Runnable {
 
     private InetAddress ipClient;
     private int portClient;
@@ -23,16 +21,21 @@ public class Comm extends Utils implements Runnable, Observer {
         parentServeur = parent;
     }
 
-    public Comm(InetAddress ip, int port, DatagramSocket ds, Serveur parent, boolean samePort) throws Exception {
-        this(ip, port, ds, parent);
-        samePortAsParent = samePort;
-    }
-
     public boolean traitement(DatagramPacket p) {
         DialogProtocol text = new DialogProtocol(p);
+        System.out.println("=============================");
+        System.out.println("Un client a envoyé un message");
 
         System.out.println(text);
-        envoyer("Message reçu : '"+text.toString()+"'", ipClient, portClient);
+        if(text.isPing()) {
+            envoyer(DialogProtocol.pong(), ipClient, portClient);
+        } else if(text.isBroadcast()) {
+            envoyer(DialogProtocol.acknowledgeRequest(), ipClient, portClient);
+            parentServeur.broadcast(text.toString(), this);
+        } else {
+            envoyer(DialogProtocol.acknowledgeRequest(), ipClient, portClient);
+        }
+        System.out.println("Message traité");
 
         if(text.isAbortingConnection()) {
             return false;
@@ -41,43 +44,16 @@ public class Comm extends Utils implements Runnable, Observer {
         return true;
     }
 
-    @Override
-    public void update(Observable o, Object arg) {
-        System.out.println("Updated !");
-        if(arg instanceof DatagramPacket) {
-            verifications((DatagramPacket) arg);
-        }
-    }
-
-    public void verifications(DatagramPacket p) {
-        System.out.println("Un client a envoyé un message");
-        System.out.println("IP paq : " + p.getAddress().getHostAddress());
-        System.out.println("");
-        if(samePortAsParent || p.getAddress().getHostAddress().equalsIgnoreCase(ipClient.getHostAddress())
-                && p.getPort() == portClient) {
-            traitement(p);
-            System.out.println("Message traité");
-        }
+    public void sendBroadcast(String message) {
+        envoyer(message, ipClient, portClient);
     }
 
     @Override
     public void init() {
-        if(!samePortAsParent) {
-            DialogProtocol response = new DialogProtocol();
-            response.setCommand(CommandEnum.CHANGINGPORT);
-            response.setContent("");
-            envoyer(response.toString(), ipClient, portClient);
-        }
-    }
-
-    @Override
-    public void preprocess() {
-
-    }
-
-    @Override
-    public void postprocess() {
-
+        DialogProtocol response = new DialogProtocol();
+        response.setCommand(CommandEnum.CHANGINGPORT);
+        response.setContent("");
+        envoyer(response.toString(), ipClient, portClient);
     }
 
     @Override
@@ -92,12 +68,8 @@ public class Comm extends Utils implements Runnable, Observer {
             System.out.println("Problème réception");
             return;
         }
-        System.out.print("Message reçu : '");
-        String msg = (new String(p.getData())).trim();
-        System.out.print(msg);
-        System.out.println("'");
 
-        update(null, p);
+        traitement(p);
     }
 
     // ============ STATIC ===================

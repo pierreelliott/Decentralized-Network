@@ -62,6 +62,10 @@ public class DialogProtocol {
     public boolean isAbortingConnection() { return command == CommandEnum.ABORTINGCONNECTION; }
     public boolean isChangingPort() { return command == CommandEnum.CHANGINGPORT; }
     public boolean isMessage() { return command == CommandEnum.MESSAGE; }
+    public boolean isPing() { return command == CommandEnum.PING; }
+    public boolean isPong() { return command == CommandEnum.PONG; }
+    public boolean isAck() { return command == CommandEnum.ACK; }
+    public boolean isBroadcast() { return command == CommandEnum.BROADCAST; }
 
     public String getNewHostAddress() {
         return isChangingPort() ? content.split(";")[0] : "";
@@ -82,6 +86,15 @@ public class DialogProtocol {
 
     public static String requestConnection(Object asker) {
         return "DialogProtocol{\ncommand='ConnectRequest'\ncontent='hello'\n}";
+    }
+    public static String acknowledgeRequest() {
+        return "DialogProtocol{\ncommand='ACK'\ncontent='Bien reçu'\n}";
+    }
+    public static String ping() {
+        return "DialogProtocol{\ncommand='Ping'\ncontent=''\n}";
+    }
+    public static String pong() {
+        return "DialogProtocol{\ncommand='Pong'\ncontent=''\n}";
     }
 
     public static CommandEnum getCommand(String message) {

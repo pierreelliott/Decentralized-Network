@@ -35,15 +35,15 @@ public enum CommandEnum {
             case "ConnectRequest" : return CommandEnum.CONNECTREQUEST;
             case "message": case "MESSAGE":
             case "Message" : return CommandEnum.MESSAGE;
-            case "ack":
+            case "ack": case "ACK":
             case "Ack" : return CommandEnum.ACK;
-            case "ping":
+            case "ping": case "PING":
             case "Ping" : return CommandEnum.PING;
-            case "pong":
+            case "pong": case "PONG":
             case "Pong" : return CommandEnum.PONG;
-            case "ChangingPort":
+            case "ChangingPort": case "CHANGINGPORT":
             case "changingport": return CommandEnum.CHANGINGPORT;
-            case "Broadcast":
+            case "Broadcast": case "BROADCAST":
             case "broadcast": return CommandEnum.BROADCAST;
         }
         return CommandEnum.UNKNOWN;

@@ -14,7 +14,8 @@ public class ConsoleProtocol {
     }
 
     public static DialogProtocol getProtocoleMessage(String text) {
-        String command = text.split(" ")[0];
+        String[] tab = text.split(" ");
+        String command = tab[0];
         DialogProtocol protoc = new DialogProtocol();
         boolean recognized = true;
         switch (command) {
@@ -27,8 +28,10 @@ public class ConsoleProtocol {
                 recognized = false;
         }
         protoc.setCommand(command);
-        String content = recognized ? text.substring(command.length()+1) : text;
-        protoc.setContent(content);
+        if(tab.length > 1) {
+            String content = recognized ? text.substring(command.length()+1) : text;
+            protoc.setContent(content);
+        }
         return protoc;
     }
 }

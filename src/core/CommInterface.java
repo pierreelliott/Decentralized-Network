@@ -66,11 +66,11 @@ public abstract class CommInterface {
         return envoyer(data, ad, port);
     }
 
-    public abstract void init();
+    public void init() {}
 
-    public abstract void preprocess();
+    public void preprocess() {}
 
-    public abstract void postprocess();
+    public void postprocess() {}
 
-    public abstract void process();
+    public void process() {}
 }

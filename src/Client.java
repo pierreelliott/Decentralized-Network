@@ -1,52 +1,53 @@
+import core.Utils;
 import protocol.ConsoleProtocol;
 import protocol.DialogProtocol;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.List;
 import java.util.Scanner;
 
-public class Client extends Util implements Runnable {
+public class Client extends Utils implements Runnable {
 
     private String SERV_IP = STATIC_SERV_IP;
     private int SERV_PORT = STATIC_SERV_PORT;
 
     public Client() throws Exception {
-        super();
+        super(new DatagramSocket());
     }
 
-    @Override
-    public void run() {
+    public void init() {
         (new Thread(() -> {
             input();
         })).start();
+    }
 
-        while(true) {
-            System.out.println("Boucle");
-            int length = 10000;
-            byte[] buf = new byte[length];
-            DatagramPacket p = new DatagramPacket(buf, length);
-            try {
-                ds.receive(p);
-                System.out.print("Message reçu : '");
-                String msg = (new String(p.getData(), "UTF-8")).trim();
-                System.out.print(msg);
-                System.out.println("'");
-                System.out.println("IP : " + p.getAddress().getHostAddress());
-                System.out.println("Port : " + p.getPort());
-                traiterReponse(p);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+    public void process() {
+        int length = 10000;
+        byte[] buf = new byte[length];
+        DatagramPacket p = new DatagramPacket(buf, length);
+        try {
+            getSocket().receive(p);
+            traiterReponse(p);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
     public void traiterReponse(DatagramPacket p) {
         DialogProtocol message = new DialogProtocol(p);
         if(message.isChangingPort()) {
+            System.out.println("Connecté au serveur");
             SERV_PORT = p.getPort();
+        } else if(message.isAck()) {
+            System.out.println("Message reçu par le serveur");
+        } else if(message.isPong()) {
+            System.out.println("Pong !");
+        } else if(message.isBroadcast()) {
+            System.out.println("Broadcasted : " + message.getContent());
         }
     }
 
@@ -67,7 +68,7 @@ public class Client extends Util implements Runnable {
     /* ======================================= */
 
     private static int STATIC_SERV_PORT = 4000;
-    private static String STATIC_SERV_IP = "127.0.0.1";
+    private static String STATIC_SERV_IP = "127.0.0.2";
 
     public static void main(String[] args) {
         Client client = null;
@@ -83,7 +84,7 @@ public class Client extends Util implements Runnable {
 
         boolean env = client.envoyer(DialogProtocol.requestConnection(client), STATIC_SERV_IP, STATIC_SERV_PORT);
         if(env)
-            System.out.println("Connecté au serveur");
+            System.out.println("Connexion demandée");
         else
             System.out.println("Erreur connexion");
 
