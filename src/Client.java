@@ -1,13 +1,9 @@
 import core.Utils;
 import protocol.ConsoleProtocol;
 import protocol.DialogProtocol;
-
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketException;
-import java.util.List;
 import java.util.Scanner;
 
 public class Client extends Utils implements Runnable {
@@ -20,6 +16,8 @@ public class Client extends Utils implements Runnable {
     }
 
     public void init() {
+        // Démarre la gestion de la console côté client
+        // L'utilisateur peut utiliser celle-ci pour envoyer des messages à travers le réseau
         (new Thread(() -> {
             input();
         })).start();

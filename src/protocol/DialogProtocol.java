@@ -13,26 +13,8 @@ public class DialogProtocol {
 
     public DialogProtocol(String data) {
         this.rawData = data;
-        String[] tab = data.split(";");
         this.command = getCommand(data);
         this.content = getContent(data);
-    }
-
-    /**
-     * Not finished
-     * @param data
-     * @deprecated
-     */
-    private void readData(String data) {
-        Pattern global = Pattern.compile("DialogProtocol\\{\\ncommand='.*'\\ncontent='.*'\\n\\}");
-        if(!data.startsWith("DialogProtocol{")) {
-            command = CommandEnum.UNKNOWN;
-            content = "";
-        } else {
-            Pattern pattern = Pattern.compile("");
-            String tab[] = data.split("\n");
-//            if(tab[1].matches(\g\))
-        }
     }
 
     public DialogProtocol(DatagramPacket p) {
@@ -49,15 +31,7 @@ public class DialogProtocol {
         this.content = content;
     }
 
-    public boolean isConnection() {
-        switch (command) {
-            case CONNECTREQUEST:
-                return true;
-            default:
-                return false;
-        }
-    }
-
+    public boolean isConnection() { return command == CommandEnum.CONNECTREQUEST; }
     public boolean isAskingConnection() { return command == CommandEnum.CONNECTREQUEST; }
     public boolean isAbortingConnection() { return command == CommandEnum.ABORTINGCONNECTION; }
     public boolean isChangingPort() { return command == CommandEnum.CHANGINGPORT; }
@@ -66,13 +40,6 @@ public class DialogProtocol {
     public boolean isPong() { return command == CommandEnum.PONG; }
     public boolean isAck() { return command == CommandEnum.ACK; }
     public boolean isBroadcast() { return command == CommandEnum.BROADCAST; }
-
-    public String getNewHostAddress() {
-        return isChangingPort() ? content.split(";")[0] : "";
-    }
-    public int getNewPort() {
-        return isChangingPort() ? Integer.parseInt(content.split(";")[1]) : 0;
-    }
 
     public String getRawData() { return rawData; }
     public String getContent() { return content; }

@@ -1,15 +1,10 @@
 import core.Utils;
 import protocol.DialogProtocol;
-
-import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
-import util.Observer;
-import util.Observable;
 
 public class Serveur extends Utils implements Runnable {
 

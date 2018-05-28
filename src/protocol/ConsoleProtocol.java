@@ -28,7 +28,7 @@ public class ConsoleProtocol {
                 recognized = false;
         }
         protoc.setCommand(command);
-        if(tab.length > 1) {
+        if(!recognized || tab.length > 1) {
             String content = recognized ? text.substring(command.length()+1) : text;
             protoc.setContent(content);
         }

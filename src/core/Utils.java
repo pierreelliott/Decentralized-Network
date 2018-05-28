@@ -11,15 +11,17 @@ public abstract class Utils extends CommInterface implements Runnable {
         super(o);
     }
 
-    public Utils(int port) throws Exception {
-        super(port);
-    }
-
     public Utils(int port, InetAddress adr) throws Exception {
         super(port, adr);
     }
 
     @Override
+    /**
+     * Fonction réalisant les traitements des clients et serveurs
+     * Client et Serveur héritent de cette classe et n'ont plus à redéfinir
+     * cette méthode "run", il leur suffit de redéfinir les méthodes
+     * "init", "preprocess", "process", "postprocess"
+     */
     public void run() {
         try {
             init();
@@ -34,6 +36,10 @@ public abstract class Utils extends CommInterface implements Runnable {
     }
 
     /* ================== STATIC ======================== */
+
+    /*
+        Fonctions réalisées dans le premier exercice du TP
+     */
 
     public static List<Integer> scan(int dep, int fin) {
         List<Integer> list = new ArrayList<>();

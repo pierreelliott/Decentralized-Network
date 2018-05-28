@@ -7,16 +7,12 @@ public abstract class CommInterface {
 
     private DatagramSocket socket;
 
-    public CommInterface(DatagramSocket sock) throws Exception {
+    public CommInterface(DatagramSocket sock) {
         socket = sock;
     }
 
     public CommInterface(int port, InetAddress adr) throws Exception {
         socket = new DatagramSocket(port, adr);
-    }
-
-    public CommInterface(int port) throws Exception {
-        socket = new DatagramSocket(port);
     }
 
     public DatagramSocket getSocket() {
