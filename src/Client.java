@@ -54,7 +54,10 @@ public class Client extends Utils implements Runnable {
             Scanner scan = new Scanner(System.in);
             String text = scan.nextLine();
             if(!text.equalsIgnoreCase("")) {
-                if(this.envoyer((ConsoleProtocol.getProtocoleMessage(text)).toString(), SERV_IP, SERV_PORT)) {
+                if(this.envoyer(
+                        (ConsoleProtocol.getProtocoleMessage(text)).toString(),
+                        SERV_IP, SERV_PORT))
+                {
                     System.out.println("Message envoyé");
                 } else {
                     System.out.println("Erreur envoi");
@@ -69,23 +72,18 @@ public class Client extends Utils implements Runnable {
     private static String STATIC_SERV_IP = "127.0.0.2";
 
     public static void main(String[] args) {
-        Client client = null;
-
         try {
-            client = new Client();
+            Client client = new Client();
+            boolean env = client.envoyer(DialogProtocol.requestConnection(client),
+                    STATIC_SERV_IP, STATIC_SERV_PORT);
+            if(env)
+                System.out.println("Connexion demandée");
+            else
+                System.out.println("Erreur connexion");
+
+            (new Thread(client)).start();
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        if(client == null)
-            return;
-
-        boolean env = client.envoyer(DialogProtocol.requestConnection(client), STATIC_SERV_IP, STATIC_SERV_PORT);
-        if(env)
-            System.out.println("Connexion demandée");
-        else
-            System.out.println("Erreur connexion");
-
-        (new Thread(client)).start();
     }
 }
